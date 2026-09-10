@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0b1f3a" />
+  <title>Performance Security | John Deere</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">S</div>
+        <div><strong>SECURITY</strong><span>John Deere</span></div>
+      </div>
+      <nav>
+        <button class="nav-item active" data-view="dashboard"><span>⌂</span>Dashboard</button>
+        <button class="nav-item" data-view="avaliacao"><span>✓</span>Avaliação 180°</button>
+        <button class="nav-item" data-view="ranking"><span>↗</span>Ranking</button>
+        <button class="nav-item" data-view="pdi"><span>◎</span>PDI</button>
+        <button class="nav-item" data-view="coordenadores"><span>♙</span>Coordenadores</button>
+        <button class="nav-item" data-view="config"><span>⚙</span>Configurações</button>
+      </nav>
+      <div class="sidebar-footer">Governança • Performance • Desenvolvimento</div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="menu" id="menuBtn">☰</button>
+        <div class="crumb"><span>Gestão de Performance</span><b>/</b><strong id="pageTitle">Dashboard Executivo</strong></div>
+        <div class="top-actions"><span class="status-dot"></span><span>Ambiente corporativo</span><button class="icon-btn" id="exportBtn" title="Exportar dados">⇩</button></div>
+      </header>
+
+      <section class="content">
+        <div id="view-dashboard" class="view active-view">
+          <div class="hero">
+            <div><span class="eyebrow">PAINEL EXECUTIVO</span><h1>Performance dos Coordenadores</h1><p>Visão consolidada de resultados, liderança, qualidade, inovação e compliance.</p></div>
+            <button class="primary" data-go="avaliacao">+ Nova avaliação</button>
+          </div>
+          <div class="filters"><select id="dashPeriod"><option value="all">Todos os períodos</option></select><select id="dashUnit"><option value="all">Todas as unidades</option></select><button class="ghost" id="clearFilters">Limpar filtros</button></div>
+          <div class="cards">
+            <article class="card"><div class="card-label">Coordenadores</div><div class="card-value" id="kpiCoordinators">0</div><div class="card-foot">cadastros ativos</div></article>
+            <article class="card"><div class="card-label">Avaliações concluídas</div><div class="card-value" id="kpiEvaluations">0</div><div class="card-foot">períodos registrados</div></article>
+            <article class="card"><div class="card-label">Nota média</div><div class="card-value" id="kpiAverage">—</div><div class="card-foot">escala de 1 a 5</div></article>
+            <article class="card"><div class="card-label">PDI em dia</div><div class="card-value" id="kpiPdi">0%</div><div class="card-foot">ações concluídas</div></article>
+          </div>
+          <div class="grid-2">
+            <section class="panel"><div class="panel-head"><div><h2>Evolução de performance</h2><p>Média final por período</p></div></div><div class="chart-wrap"><canvas id="evolutionChart" height="220"></canvas><div class="empty-chart" id="emptyChart">Cadastre avaliações para visualizar a evolução.</div></div></section>
+            <section class="panel"><div class="panel-head"><div><h2>Distribuição por classificação</h2><p>Visão atual dos resultados</p></div></div><div id="distribution" class="distribution"></div></section>
+          </div>
+          <div class="grid-2 lower"><section class="panel"><div class="panel-head"><div><h2>Top performance</h2><p>Ranking consolidado</p></div><button class="link-btn" data-go="ranking">Ver ranking →</button></div><div id="topRanking"></div></section><section class="panel"><div class="panel-head"><div><h2>Pontos de atenção</h2><p>Indicadores que pedem ação</p></div></div><div id="attention"></div></section></div>
+        </div>
+
+        <div id="view-avaliacao" class="view">
+          <div class="section-title"><div><span class="eyebrow">MODELO 180°</span><h1>Nova avaliação de performance</h1><p>Registre notas de 1 a 5, evidências e observações dos avaliadores.</p></div></div>
+          <form id="evaluationForm" class="panel form-panel">
+            <div class="form-grid"><label>Coordenador<select id="evalCoordinator" required></select></label><label>Unidade<input id="evalUnit" placeholder="Ex.: Horizontina" required /></label><label>Período<input id="evalPeriod" type="month" required /></label><label>Avaliador 1<input id="eval1" placeholder="Gerente de Contrato" required /></label><label>Avaliador 2<input id="eval2" placeholder="Gerente de Operações" required /></label></div>
+            <div id="criteriaContainer"></div>
+            <div class="form-actions"><button type="button" class="ghost" data-go="dashboard">Cancelar</button><button class="primary" type="submit">Salvar avaliação</button></div>
+          </form>
+        </div>
+
+        <div id="view-ranking" class="view"><div class="section-title"><div><span class="eyebrow">COMPARATIVO EXECUTIVO</span><h1>Ranking de Performance</h1><p>Comparação somente entre avaliações com critérios e períodos equivalentes.</p></div></div><section class="panel"><div class="table-tools"><input id="rankingSearch" placeholder="Buscar coordenador ou unidade..." /><select id="rankingPeriod"><option value="all">Todos os períodos</option></select></div><div class="table-scroll"><table><thead><tr><th>#</th><th>Coordenador</th><th>Unidade</th><th>Nota final</th><th>Classificação</th><th>KPIs</th><th>Liderança</th><th>Qualidade</th><th>Inovação</th><th>Cliente/Compliance</th></tr></thead><tbody id="rankingBody"></tbody></table></div></section></div>
+
+        <div id="view-pdi" class="view"><div class="section-title"><div><span class="eyebrow">DESENVOLVIMENTO</span><h1>Plano de Desenvolvimento Individual</h1><p>Transforme gaps de performance em ações acompanháveis.</p></div><button class="primary" id="addPdiBtn">+ Nova ação</button></div><section class="panel"><div class="table-scroll"><table><thead><tr><th>Competência / Gap</th><th>Objetivo</th><th>Ação de desenvolvimento</th><th>Responsável</th><th>Prazo</th><th>Indicador</th><th>Status</th></tr></thead><tbody id="pdiBody"></tbody></table></div></section></div>
+
+        <div id="view-coordenadores" class="view"><div class="section-title"><div><span class="eyebrow">BASE DE GESTÃO</span><h1>Coordenadores</h1><p>Cadastre uma vez e reutilize em avaliações, ranking e histórico.</p></div><button class="primary" id="addCoordinatorBtn">+ Novo coordenador</button></div><section class="panel"><div class="table-scroll"><table><thead><tr><th>Nome</th><th>Unidade</th><th>Região</th><th>Status</th><th>Avaliações</th><th>Última nota</th></tr></thead><tbody id="coordBody"></tbody></table></div></section></div>
+
+        <div id="view-config" class="view"><div class="section-title"><div><span class="eyebrow">GOVERNANÇA</span><h1>Configurações</h1><p>Parâmetros do modelo de avaliação.</p></div></div><div class="grid-2"><section class="panel"><h2>Pilares e pesos</h2><div id="weights"></div></section><section class="panel"><h2>Escala</h2><div class="scale-list"><div><b>5</b><span>Excepcional</span></div><div><b>4</b><span>Acima do esperado</span></div><div><b>3</b><span>Dentro do esperado</span></div><div><b>2</b><span>Necessita desenvolvimento</span></div><div><b>1</b><span>Performance crítica</span></div></div><div class="note">Princípios: critérios e pesos definidos, evidências registradas, PDI para desvios e atualização rastreável.</div></section></div></div>
+      </section>
+    </main>
+  </div>
+  <div id="modal" class="modal hidden"><div class="modal-card"><button class="modal-close" id="modalClose">×</button><div id="modalContent"></div></div></div>
+  <script src="app.js"></script>
+</body>
+</html>
