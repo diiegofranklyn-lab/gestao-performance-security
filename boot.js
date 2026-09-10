@@ -1,23 +1,15 @@
 (function(){'use strict';
-function bootNav(){
-  var titles={dashboard:'Dashboard Executivo',avaliacao:'Avaliação 180°',ranking:'Ranking',pdi:'Plano de Desenvolvimento Individual',coordenadores:'Coordenadores',config:'Configurações'};
-  function show(view){
-    var views=document.querySelectorAll('.view');
-    for(var i=0;i<views.length;i++){views[i].classList.toggle('active-view',views[i].id==='view-'+view)}
-    var nav=document.querySelectorAll('.nav-item');
-    for(var j=0;j<nav.length;j++){nav[j].classList.toggle('active',nav[j].getAttribute('data-view')===view)}
-    var title=document.getElementById('pageTitle');if(title)title.textContent=titles[view]||'Gestão de Performance';
-    try{history.replaceState(null,'','#'+view)}catch(e){}
-    window.scrollTo(0,0);
-  }
-  document.addEventListener('click',function(e){
-    var el=e.target.closest ? e.target.closest('[data-view],[data-go]') : null;
-    if(!el)return;
-    var v=el.getAttribute('data-view')||el.getAttribute('data-go');
-    if(v){e.preventDefault();e.stopImmediatePropagation();show(v)}
-  },true);
-  window.addEventListener('hashchange',function(){var v=location.hash.replace('#','');if(titles[v])show(v)});
-  var h=location.hash.replace('#','');if(titles[h])show(h);
-}
+var KEY='securityPerformanceJD_v4';
+var titles={dashboard:'Dashboard Executivo',avaliacao:'Avaliação 180°',ranking:'Ranking',pdi:'Plano de Desenvolvimento Individual',coordenadores:'Coordenadores',config:'Configurações'};
+function show(view){var views=document.querySelectorAll('.view');for(var i=0;i<views.length;i++)views[i].classList.toggle('active-view',views[i].id==='view-'+view);var nav=document.querySelectorAll('.nav-item');for(var j=0;j<nav.length;j++)nav[j].classList.toggle('active',nav[j].getAttribute('data-view')===view);var title=document.getElementById('pageTitle');if(title)title.textContent=titles[view]||'Gestão de Performance';try{history.replaceState(null,'','#'+view)}catch(e){}window.scrollTo(0,0)}
+function uid(){return 'id_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8)}
+function getDB(){var d={coordinators:[],evaluations:[],pdi:[]};try{var x=JSON.parse(localStorage.getItem(KEY)||'null');if(x&&typeof x==='object')d=x}catch(e){}if(!Array.isArray(d.coordinators))d.coordinators=[];if(!Array.isArray(d.evaluations))d.evaluations=[];if(!Array.isArray(d.pdi))d.pdi=[];return d}
+function putDB(d){localStorage.setItem(KEY,JSON.stringify(d))}
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]})}
+function refreshCoordinators(){var d=getDB(),b=document.getElementById('coordBody');if(b)b.innerHTML=d.coordinators.length?d.coordinators.map(function(c){var es=d.evaluations.filter(function(e){return e.coordinatorId===c.id});var last=es[es.length-1];return '<tr><td><b>'+esc(c.name)+'</b></td><td>'+esc(c.unit)+'</td><td>'+esc(c.region||'—')+'</td><td><span class="badge green">Ativo</span></td><td>'+es.length+'</td><td>'+(last?Number(last.final).toFixed(2):'—')+'</td></tr>'}).join(''):'<tr><td colspan="6">Nenhum coordenador cadastrado.</td></tr>';var s=document.getElementById('evalCoordinator');if(s){var old=s.value;s.innerHTML='<option value="">Selecione o coordenador...</option>'+d.coordinators.map(function(c){return '<option value="'+esc(c.id)+'">'+esc(c.name)+' — '+esc(c.unit)+'</option>'}).join('');s.value=old}}
+function openCoordinator(){var m=document.getElementById('modal'),c=document.getElementById('modalContent');if(!m||!c)return;c.innerHTML='<h2>Novo coordenador</h2><form id="coordFormBoot" class="modal-form"><label>Nome<input name="name" autocomplete="name" required></label><label>Unidade<input name="unit" autocomplete="organization" required></label><label>Região<input name="region"></label><div class="modal-actions"><button type="button" class="ghost" data-close-boot>Cancelar</button><button class="primary" type="submit">Cadastrar</button></div></form>';m.classList.remove('hidden');var f=document.getElementById('coordFormBoot');if(f)f.querySelector('input[name="name"]').focus()}
+function closeCoordinator(){var m=document.getElementById('modal');if(m)m.classList.add('hidden')}
+function saveCoordinator(f){var fd=new FormData(f),name=String(fd.get('name')||'').trim(),unit=String(fd.get('unit')||'').trim(),region=String(fd.get('region')||'').trim();if(!name||!unit){alert('Informe o nome e a unidade do coordenador.');return}var d=getDB();d.coordinators.push({id:uid(),name:name,unit:unit,region:region});putDB(d);closeCoordinator();refreshCoordinators();show('coordenadores');alert('Coordenador cadastrado com sucesso!')}
+function bootNav(){document.addEventListener('click',function(e){var el=e.target.closest?e.target.closest('[data-view],[data-go]'):null;if(el){var v=el.getAttribute('data-view')||el.getAttribute('data-go');if(v){e.preventDefault();e.stopImmediatePropagation();show(v);if(v==='coordenadores')refreshCoordinators();return}}if(e.target.closest&&e.target.closest('#addCoordinatorBtn')){e.preventDefault();e.stopImmediatePropagation();openCoordinator();return}if(e.target.closest&&e.target.closest('[data-close-boot]')){e.preventDefault();e.stopImmediatePropagation();closeCoordinator()}},true);document.addEventListener('submit',function(e){if(e.target&&e.target.id==='coordFormBoot'){e.preventDefault();e.stopImmediatePropagation();saveCoordinator(e.target)}},true);window.addEventListener('hashchange',function(){var v=location.hash.replace('#','');if(titles[v])show(v)});refreshCoordinators();var h=location.hash.replace('#','');if(titles[h])show(h)},true);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootNav);else bootNav();
 })();
