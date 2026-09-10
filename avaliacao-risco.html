@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#071b33">
+<title>Avaliação de Percepção de Risco</title>
+<style>
+:root{--navy:#071b33;--navy2:#0d2b4d;--line:#d9e1ea;--bg:#f4f7fa;--green:#25a844;--red:#e52424;--blue:#1d6fd8;--muted:#64748b}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:#162235}.wrap{max-width:1200px;margin:0 auto;padding:24px}.top{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-radius:18px;padding:28px 30px;box-shadow:0 12px 35px #071b3318}.top h1{margin:0 0 7px;font-size:27px}.top p{margin:0;color:#cbd8e6}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;margin-top:18px;padding:20px;box-shadow:0 8px 24px #071b330b}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.field label{display:block;font-size:12px;font-weight:700;color:#526174;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:11px 12px;font:inherit;background:#fff}.field textarea{min-height:70px;resize:vertical}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.section-head h2{margin:0;font-size:18px}.btn{border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}.primary{background:var(--blue);color:#fff}.ghost{background:#edf3f8;color:#18324e}.danger{background:#fff0f0;color:#c61f1f}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:11px}.table{width:100%;border-collapse:collapse;min-width:820px}.table th{background:#f7f9fb;color:#334155;font-size:12px;text-align:left;padding:12px;border-bottom:1px solid var(--line)}.table td{padding:9px;border-bottom:1px solid var(--line);vertical-align:middle}.table tr:last-child td{border-bottom:0}.task-input{width:100%;border:1px solid #cbd5e1;border-radius:7px;padding:9px}.notes{width:100%;min-width:180px;border:1px solid #cbd5e1;border-radius:7px;padding:9px;resize:vertical}.status{min-width:145px;border:1px solid #cbd5e1;border-radius:7px;padding:9px;font-weight:700}.status.aprovado{background:#d9f2cf;color:#1d651c;border-color:#9fda91}.status.reprovado{background:#ffdede;color:#9e1111;border-color:#f2a3a3}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.metric{border:1px solid var(--line);border-radius:12px;padding:15px;background:#fbfcfd}.metric span{display:block;font-size:12px;color:var(--muted);font-weight:700}.metric strong{display:block;font-size:25px;margin-top:4px}.score{font-size:32px!important}.good{color:#18843a}.bad{color:#c21e1e}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}.hint{font-size:12px;color:var(--muted);margin-top:9px}.pill{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:800}.pill.good{background:#dcfce7}.pill.bad{background:#fee2e2}@media(max-width:800px){.grid,.summary{grid-template-columns:1fr}.wrap{padding:12px}.top{padding:22px}.top h1{font-size:22px}}
+@media print{body{background:#fff}.wrap{max-width:none;padding:0}.top{box-shadow:none}.btn,.actions,.hint{display:none!important}.panel{box-shadow:none;break-inside:avoid}.table{min-width:0}.table th:last-child,.table td:last-child{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><h1>Avaliação de Percepção de Risco</h1><p>Checklist online para exercícios de tentativa de invasão, controle de acesso e resposta operacional.</p></header>
+<section class="panel">
+<div class="section-head"><h2>Identificação da avaliação</h2><span id="classPill" class="pill bad">Insatisfatório</span></div>
+<div class="grid">
+<div class="field"><label>Cenário</label><input id="cenario" placeholder="Ex.: Tentativa de invasão"></div>
+<div class="field"><label>Local / Unidade</label><input id="local" placeholder="Ex.: Portaria principal"></div>
+<div class="field"><label>Auditor / Coordenador</label><input id="auditor" placeholder="Nome do responsável"></div>
+<div class="field"><label>Ator</label><input id="ator" placeholder="Nome do ator"></div>
+<div class="field"><label>Data</label><input id="data" type="date"></div>
+<div class="field"><label>Posto avaliado</label><input id="posto" placeholder="Ex.: Portaria / Ronda / Monitoramento"></div>
+</div>
+</section>
+<section class="panel">
+<div class="section-head"><h2>Tarefas avaliadas</h2><button class="btn primary" id="addBtn" type="button">+ Adicionar tarefa</button></div>
+<div class="table-wrap"><table class="table"><thead><tr><th style="width:48%">Tarefa</th><th style="width:17%">Aprovado / Reprovado</th><th>Notas</th><th style="width:70px">Ação</th></tr></thead><tbody id="taskBody"></tbody></table></div>
+<div class="hint">A nota é calculada automaticamente: <b>tarefas aprovadas ÷ quantidade de tarefas cadastradas × 100</b>. Tarefas sem descrição não entram no denominador.</div>
+</section>
+<section class="panel">
+<div class="summary">
+<div class="metric"><span>Tarefas</span><strong id="total">0</strong></div>
+<div class="metric"><span>Aprovadas</span><strong id="approved">0</strong></div>
+<div class="metric"><span>Reprovadas</span><strong id="failed">0</strong></div>
+<div class="metric"><span>Nota final</span><strong id="score" class="score">0%</strong></div>
+</div>
+<div class="actions"><button class="btn ghost" id="clearBtn" type="button">Limpar</button><button class="btn ghost" id="printBtn" type="button">Imprimir / PDF</button><button class="btn primary" id="saveBtn" type="button">Salvar avaliação</button></div>
+<div id="saveMsg" class="hint" style="text-align:right"></div>
+</section>
+</div>
+<script>
+const initialTasks=[
+ {task:'Identificar pessoa suspeita',status:'Aprovado',notes:''},
+ {task:'Acionou a Liderança do posto',status:'Reprovado',notes:''},
+ {task:'Registrar características do invasor, veículos, quantidade de pessoas, características dos invasores',status:'Aprovado',notes:''},
+ {task:'Repassar informações com clareza e detalhes para a Liderança',status:'Aprovado',notes:''},
+ {task:'Ligou para RSOC?',status:'Reprovado',notes:''}
+];
+const KEY='avaliacaoPercepcaoRisco_v1';
+const body=document.getElementById('taskBody');
+function addTask(data={task:'',status:'Aprovado',notes:''}){
+ const tr=document.createElement('tr');
+ tr.innerHTML=`<td><input class="task-input task" value="${esc(data.task)}" placeholder="Descreva a tarefa"></td><td><select class="status ${data.status==='Aprovado'?'aprovado':'reprovado'}"><option>Aprovado</option><option>Reprovado</option></select></td><td><textarea class="notes" placeholder="Observações">${esc(data.notes||'')}</textarea></td><td><button class="btn danger del" type="button">Excluir</button></td>`;
+ tr.querySelector('.status').value=data.status||'Aprovado'; tr.querySelector('.status').className='status '+(tr.querySelector('.status').value==='Aprovado'?'aprovado':'reprovado');
+ tr.querySelectorAll('input,select,textarea').forEach(el=>el.addEventListener('input',()=>{updateStatus(el);calculate()}));
+ tr.querySelector('.del').addEventListener('click',()=>{tr.remove();calculate()});
+ body.appendChild(tr); calculate();
+}
+function esc(v){return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;')}
+function updateStatus(el){if(el.classList.contains('status'))el.className='status '+(el.value==='Aprovado'?'aprovado':'reprovado')}
+function rows(){return [...body.querySelectorAll('tr')].map(tr=>({task:tr.querySelector('.task').value.trim(),status:tr.querySelector('.status').value,notes:tr.querySelector('.notes').value}))}
+function calculate(){const valid=rows().filter(x=>x.task);const total=valid.length;const approved=valid.filter(x=>x.status==='Aprovado').length;const failed=valid.filter(x=>x.status==='Reprovado').length;const pct=total?approved/total*100:0;document.getElementById('total').textContent=total;document.getElementById('approved').textContent=approved;document.getElementById('failed').textContent=failed;const score=document.getElementById('score');score.textContent=pct.toFixed(2).replace('.',',')+'%';score.className='score '+(pct>=80?'good':'bad');const pill=document.getElementById('classPill');pill.textContent=pct>=80?'Satisfatório':'Insatisfatório';pill.className='pill '+(pct>=80?'good':'bad')}
+function save(){const data={meta:{cenario:cenario.value,local:local.value,auditor:auditor.value,ator:ator.value,data:dataEl.value,posto:posto.value},tasks:rows(),savedAt:new Date().toISOString()};localStorage.setItem(KEY,JSON.stringify(data));saveMsg.textContent='Avaliação salva neste dispositivo.';setTimeout(()=>saveMsg.textContent='',2500)}
+function load(){const raw=localStorage.getItem(KEY);if(!raw){initialTasks.forEach(addTask);return}try{const d=JSON.parse(raw);Object.assign({},{}) ;cenario.value=d.meta?.cenario||'';local.value=d.meta?.local||'';auditor.value=d.meta?.auditor||'';ator.value=d.meta?.ator||'';dataEl.value=d.meta?.data||'';posto.value=d.meta?.posto||'';(d.tasks||[]).forEach(addTask);if(!(d.tasks||[]).length)initialTasks.forEach(addTask)}catch(e){initialTasks.forEach(addTask)}}
+const cenario=document.getElementById('cenario'),local=document.getElementById('local'),auditor=document.getElementById('auditor'),ator=document.getElementById('ator'),dataEl=document.getElementById('data'),posto=document.getElementById('posto'),saveMsg=document.getElementById('saveMsg');
+document.getElementById('addBtn').onclick=()=>addTask();document.getElementById('saveBtn').onclick=save;document.getElementById('printBtn').onclick=()=>window.print();document.getElementById('clearBtn').onclick=()=>{if(confirm('Limpar toda a avaliação?')){localStorage.removeItem(KEY);body.innerHTML='';initialTasks.forEach(addTask);[cenario,local,auditor,ator,dataEl,posto].forEach(x=>x.value='');calculate()}};
+[dataEl,cenario,local,auditor,ator,posto].forEach(el=>el.addEventListener('input',calculate));load();
+</script>
+</body>
+</html>
