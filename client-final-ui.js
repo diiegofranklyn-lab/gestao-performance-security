@@ -1,0 +1,18 @@
+(function(){
+'use strict';
+var KEY='securityPerformanceJD_v4';
+function $(s){return document.querySelector(s)}
+function $$(s){return Array.prototype.slice.call(document.querySelectorAll(s))}
+function classify(n){n=Number(n)||0;return n>=4.5?'Excepcional':n>=4?'Acima do esperado':n>=3?'Dentro do esperado':n>=2?'Necessita desenvolvimento':'Performance crítica'}
+function managerScore(){var w=[.30,.20,.20,.15,.15],lens=[4,5,4,2,3],av=[];for(var i=0;i<lens.length;i++){var a=[];for(var j=0;j<lens[i];j++){var el=$('[name="score_'+i+'_'+j+'"]'),v=Number(el&&el.value);if(v>=1&&v<=5)a.push(v)}if(a.length!==lens[i])return null;av.push(a.reduce(function(x,y){return x+y},0)/a.length)}return av.reduce(function(s,n,i){return s+n*w[i]},0)}
+function update(){var m=managerScore(),c=Number($('#clientScore')&&$('#clientScore').value),ok=c>=1&&c<=5,final=m!=null&&ok?(m+c)/2:null;if($('#managerScorePreview'))$('#managerScorePreview').textContent=m==null?'—':m.toFixed(2);if($('#clientScorePreview'))$('#clientScorePreview').textContent=ok?c.toFixed(2):'—';if($('#finalScorePreview'))$('#finalScorePreview').textContent=final==null?'—':final.toFixed(2);if($('#finalClassPreview'))$('#finalClassPreview').textContent=final==null?'—':classify(final)}
+function selectClient(v,btn){var i=$('#clientScore');if(i)i.value=v;$$('[data-client-score]').forEach(function(b){b.classList.toggle('selected',b===btn)});update()}
+function patchRanking(){var body=$('#rankingBody');if(!body)return;var db={};try{db=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){};body.querySelectorAll('tr').forEach(function(row){if(row.querySelector('[data-client-cell]'))return;var cells=row.querySelectorAll('td');if(cells.length<10)return;var name=cells[1].textContent.trim(),item=(db.evaluations||[]).find(function(x){return x.coordinator===name});var td=document.createElement('td');td.setAttribute('data-client-cell','1');td.textContent=item&&item.clientScore!=null?Number(item.clientScore).toFixed(2):'—';row.appendChild(td)})}
+function patchHistory(){var sec=$('#evaluationHistory');if(!sec)return;var db={};try{db=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){};sec.querySelectorAll('tbody tr').forEach(function(row){var cells=row.querySelectorAll('td');if(cells.length!==4)return;var name=cells[0].textContent.trim(),period=cells[1].textContent.trim(),item=(db.evaluations||[]).find(function(x){return x.coordinator===name&&x.period===period});if(!item)return;var client=document.createElement('td');client.textContent=item.clientScore==null?'—':Number(item.clientScore).toFixed(2);var final=document.createElement('td');final.textContent=Number(item.final||0).toFixed(2);row.insertBefore(client,cells[2]);row.insertBefore(final,row.lastElementChild)})}
+function refresh(){update();patchRanking();patchHistory()}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-client-score]');if(b){e.preventDefault();selectClient(b.getAttribute('data-client-score'),b)}});
+document.addEventListener('input',function(e){if(e.target.id==='clientScore'||(e.target.name&&e.target.name.indexOf('score_')===0))update()});
+document.addEventListener('change',function(e){if(e.target.id==='clientScore')update()});
+document.addEventListener('security-data-synced',function(){setTimeout(refresh,50)});
+document.addEventListener('DOMContentLoaded',function(){setTimeout(refresh,100);setTimeout(patchRanking,500)});
+})();
