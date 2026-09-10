@@ -23,8 +23,11 @@ async function removeCoordinator(id,name){
   var sb=window.securitySupabase;
   try{
     if(sb){
-      var r1=await sb.from('evaluation_scores').delete().in('evaluation_id',await evaluationIds(sb,id));
-      if(r1.error)throw r1.error;
+      var ids=await evaluationIds(sb,id);
+      if(ids.length){
+        var r1=await sb.from('evaluation_scores').delete().in('evaluation_id',ids);
+        if(r1.error)throw r1.error;
+      }
       var r2=await sb.from('evaluations').delete().eq('coordinator_id',id);
       if(r2.error)throw r2.error;
       var r3=await sb.from('pdis').delete().eq('coordinator_id',id);
