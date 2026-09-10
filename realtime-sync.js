@@ -1,0 +1,8 @@
+(function(){'use strict';
+var KEY='securityPerformanceJD_v4',timer=null,last='';
+function snapshot(){try{return localStorage.getItem(KEY)||''}catch(e){return ''}}
+function refresh(){clearTimeout(timer);timer=setTimeout(function(){var before=snapshot();if(window.securitySupabase&&typeof window.securitySupabase.from==='function'){window.securitySupabase.from('coordinators').select('id',{count:'exact',head:true}).then(function(){if(window.securitySupabase&&typeof window.securitySupabase.channel==='function')return;}).catch(function(){})}if(document.querySelector('#evaluationForm')&&document.querySelector('#evaluationForm').querySelector(':focus'))return;location.reload()},900)}
+function poll(){var s=snapshot();if(last&&s!==last)refresh();last=s}
+function start(){if(!window.securitySupabase)return;try{var channel=window.securitySupabase.channel('performance-live').on('postgres_changes',{event:'*',schema:'public',table:'coordinators'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'evaluations'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'evaluation_scores'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'pdis'},refresh).subscribe();window.performanceRealtimeChannel=channel}catch(e){console.warn('Realtime indisponível; usando sincronização periódica.',e)}setInterval(poll,5000)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
